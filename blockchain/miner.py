@@ -25,7 +25,10 @@ def proof_of_work(last_proof):
     r = requests.get(url=node + "/full_chain")
     data = r.json()
 
-    proof = 0
+    my_rand = random.random()
+    my_multi = 10 ** random.randint(0,18)
+    proof = my_rand * my_multi
+    # print(f"start proof: {proof}")
     #  TODO: Your code here
     while valid_proof(last_proof, proof) is False:
         proof += 1
