@@ -2,6 +2,7 @@ import hashlib
 import requests
 
 import sys
+import json
 
 from uuid import uuid4
 
@@ -19,12 +20,15 @@ def proof_of_work(last_proof):
     - p is the previous proof, and p' is the new proof
     - Use the same method to generate SHA-256 hashes as the examples in class
     """
-
     start = timer()
 
-    print("Searching for next proof")
+    r = requests.get(url=node + "/full_chain")
+    data = r.json()
+
     proof = 0
     #  TODO: Your code here
+    while valid_proof(last_proof, proof) is False:
+        proof += 1
 
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
@@ -40,7 +44,18 @@ def valid_proof(last_hash, proof):
     """
 
     # TODO: Your code here!
-    pass
+    prev_proof = f"{last_hash}".encode()
+    prev_proof_hash = hashlib.sha256(prev_proof).hexdigest()
+    
+    new_proof = f"{proof}".encode()
+    new_proof_hash = hashlib.sha256(new_proof).hexdigest()
+    
+    # if new_proof_hash[:6] == prev_proof_hash[-6:]:
+    #     print("\n~~~~~~~~~~~~~~~~~~\n")
+    #     print(f'last 6: {prev_proof_hash[-6:]} | first 6: {new_proof_hash[:6]}')
+    #     print("\n~~~~~~~~~~~~~~~~~~\n")
+        
+    return new_proof_hash[:6] == prev_proof_hash[-6:]
 
 
 if __name__ == '__main__':
